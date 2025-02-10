@@ -1,32 +1,20 @@
 // controllers/shoppingController.js 
 const shoppingModel = require('../models/shoppingModel'); 
-  
-const showShoppingList = (req, res) => { 
-    const shoppingData = shoppingModel.getData(); 
-    res.render('index', { shoppingData }); 
+
+const showTable = (req, res) => { 
+    //gets table properties from model
+    const tblData = shoppingModel.getData(); 
+    res.render('index', { tblData }); 
 }; 
   
+//GETS form data and passes it to model
 const addItem = (req, res) => { 
-    const { item, listType } = req.body; 
-    shoppingModel.addItem(item, listType); 
-    res.redirect('/'); 
-}; 
-  
-const deleteItem = (req, res) => { 
-    const { item, listType } = req.body; 
-    shoppingModel.deleteItem(item, listType); 
-    res.redirect('/'); 
-}; 
-  
-const toggleItem = (req, res) => { 
-    const { item, fromList } = req.body; 
-    shoppingModel.toggleItem(item, fromList); 
+    const { chartOptions, chartTitle, chartSections, chartLabels, chartTotal } = req.body; //attrs names from html
+    shoppingModel.addTblData( chartOptions, chartTitle, chartSections, chartLabels, chartTotal ); 
     res.redirect('/'); 
 }; 
   
 module.exports = { 
-    showShoppingList, 
-    addItem, 
-    deleteItem, 
-    toggleItem 
+    showTable, 
+    addItem
 };

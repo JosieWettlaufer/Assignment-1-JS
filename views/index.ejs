@@ -6,34 +6,7 @@
     <link rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
       <script src="https://www.gstatic.com/charts/loader.js"></script>
-      <script>
-        google.charts.load("current", { packages: ["corechart"] });
-        google.charts.setOnLoadCallback(drawChart);
-
-
-function drawChart() {
-  // Define the chart to be drawn.
-  var data = new google.visualization.DataTable();
-  data.addColumn("string", "Element");
-  data.addColumn("number", "Percentage");
-
-  //replace string w/ array[i], 4 with section numbers
-  for (let i = 0; i < 4; i++) {
-  data.addRows([
-    [`${i}`, i/100]
-  ]);
-  }
-
-  //set title
-  var options = {'title':'How Much Pizza I Ate Last Night'};
-
-  // Instantiate and draw the chart.
-  var chart = new google.visualization.PieChart(
-    document.getElementById("myChart")
-  );
-  chart.draw(data, options);
-}
-      </script>
+  </head>
       
   <body>
     <h1>Chart Generator</h1>
@@ -41,52 +14,104 @@ function drawChart() {
     <div class="container">
       <h2>Create Chart</h2>
       <!--Chart type drop down-->
-      <form action="/submit" method="post">
+      <form action="/add" method="POST">
         <div class="form-group">
           <label for="options">Choose an option:</label>
-          <select id="options" class="form-control" name="options">
-            <option value="pie-chart">Pie Chart</option>
-            <option value="bar-chart">Bar Chart</option>
+          <select id="options" class="form-control" name="chartOptions">
+            <option value="PieChart">Pie Chart</option>
+            <option value="BarChart">Bar Chart</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="chart-title">Chart Title</label>
+          <label for="chartTitle">Chart Title</label>
           <input
             type="text"
             class="form-control"
-            name="chart-title"
+            name="chartTitle"
             placeholder="Enter chart title"
             required
           />
         </div>
 
         <div class="form-group">
-          <label for="chart-sections">Chart Sections</label>
+          <label for="chartSections">Chart Sections</label>
           <input
             type="int"
             class="form-control"
-            name="chart-sections"
+            name="chartSections"
             placeholder="Enter number of chart sections 2-6"
             required
           />
         </div>
 
+        <!--need to convert to array-->
         <div class="form-group">
-          <label for="chart-total">Chart Total</label>
+          <label for="chartLabels">Chart Labels</label>
+          <input
+            type="text"
+            class="form-control"
+            name="chartLabels"
+            placeholder="Enter chart labels"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="chartTotal">Chart Total</label>
           <input
             type="int"
             class="form-control"
-            name="chart-total"
+            name="chartTotal"
             placeholder="Enter total value of all sectors"
-            required
           />
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button class="btn btn-primary">Submit</button>
         </div>
       </form>
 
       <div id="myChart" style="max-width:700px; height:400px"></div>
     </div>
       
+    <script>    
+      var tblData = <%- JSON.stringify(tblData) %>;  // Embed JSON into JS
+      console.log(tblData);
+
+      //loads chart libraries
+      google.charts.load("current", { packages: ["corechart"] });
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        // Define the chart to be drawn.
+        var data = new google.visualization.DataTable();
+        data.addColumn("string", "Element");
+        data.addColumn("number", "Percentage");
+
+          //replace string w/ array[i], 4 with section numbers
+          for (let i = 0; i <= Number(tblData.chartSections); i++) { 
+          data.addRows([
+            [`${tblData.chartLabels}`, i/100] //convert to array plz
+          ]);
+          }
+
+      //set title
+      var options = {'title':`${tblData.chartTitle}`};
+
+      var chart = new google.visualization.PieChart(
+        document.getElementById("myChart"));
+
+      if (tblData.chartOptions === "PieChart") {
+          // Instantiate and draw the chart.
+          var chart = new google.visualization.PieChart(
+          document.getElementById("myChart")
+          );
+      } else if (tblData.chartOptions === "BarChart") {
+          var chart = new google.visualization.BarChart(
+          document.getElementById("myChart")
+          );
+      }
+      chart.draw(data, options);
+    }
+    </script>
   </body>
 </html>
