@@ -2,32 +2,39 @@
 <html lang="en">
     <head>
       <meta charset="UTF-8" />
-    <title>Shopping List</title>
-    <link
-      rel="stylesheet"
+    <title>Chart Generator</title>
+    <link rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
-
       <script src="https://www.gstatic.com/charts/loader.js"></script>
       <script>
-        google.charts.load('current', {packages: ['corechart']});
+        google.charts.load("current", { packages: ["corechart"] });
         google.charts.setOnLoadCallback(drawChart);
-    
-        function drawChart() {
-          // Define the chart to be drawn.
-          var data = new google.visualization.DataTable();
-          data.addColumn('string', 'Element');
-          data.addColumn('number', 'Percentage');
-          data.addRows([
-            ['Nitrogen', 0.78],
-            ['Oxygen', 0.21],
-            ['Other', 0.01]
-          ]);
-    
-          // Instantiate and draw the chart.
-          var chart = new google.visualization.PieChart(document.getElementById('myChart'));
-          chart.draw(data, null);
-        }
+
+
+function drawChart() {
+  // Define the chart to be drawn.
+  var data = new google.visualization.DataTable();
+  data.addColumn("string", "Element");
+  data.addColumn("number", "Percentage");
+
+  //replace string w/ array[i], 4 with section numbers
+  for (let i = 0; i < 4; i++) {
+  data.addRows([
+    [`${i}`, i/100]
+  ]);
+  }
+
+  //set title
+  var options = {'title':'How Much Pizza I Ate Last Night'};
+
+  // Instantiate and draw the chart.
+  var chart = new google.visualization.PieChart(
+    document.getElementById("myChart")
+  );
+  chart.draw(data, options);
+}
       </script>
+      
   <body>
     <h1>Chart Generator</h1>
 
