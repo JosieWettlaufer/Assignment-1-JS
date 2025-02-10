@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Shopping List</title>
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+  </head>
+  <body>
+    <h1>Chart Generator</h1>
+
+    <div class="container">
+      <h2>Create Chart</h2>
+      <!--Chart type drop down-->
+      <form action="/submit" method="post">
+        <div class="form-group">
+          <label for="options">Choose an option:</label>
+          <select id="options" class="form-control" name="options">
+            <option value="pie-chart">Pie Chart</option>
+            <option value="bar-chart">Bar Chart</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="chart-title">Chart Title</label>
+          <input
+            type="text"
+            class="form-control"
+            name="chart-title"
+            placeholder="Enter chart title"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="chart-sections">Chart Sections</label>
+          <input
+            type="int"
+            class="form-control"
+            name="chart-sections"
+            placeholder="Enter number of chart sections 2-6"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="chart-total">Chart Total</label>
+          <input
+            type="int"
+            class="form-control"
+            name="chart-total"
+            placeholder="Enter total value of all sectors"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+
+      <div id="myChart" style="max-width:700px; height:400px"></div>
+    </div>
+      
+  </body>
+</html>
