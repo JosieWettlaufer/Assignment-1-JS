@@ -64,6 +64,7 @@
       <div id="myChart" style="max-width:700px; height:400px"></div>
     </div>
     
+    <!--Creates Label Fields Dynamically-->
     <script>
       document.getElementById("chartSections").addEventListener("change", function () {
         const numSections = parseInt(this.value);
@@ -75,12 +76,12 @@
           formGroup.classList.add("form-group", "row");
           formGroup.innerHTML = `
             <div class="form-group col-md-6">
-              <label>Chart Labels</label>
-              <input type="text" class="form-control" name="chartLabels" placeholder="Enter chart labels" required />
+              <label>Section ${i+1} Label</label>
+              <input type="text" class="form-control" name="chartLabels[]" placeholder="Enter chart labels" required />
             </div>
             <div class="form-group col-md-6">
-              <label>Chart Subtotal</label>
-              <input type="number" class="form-control" name="chartSubtotal" placeholder="Enter section value" required />
+              <label>Section ${i+1} Value</label>
+              <input type="number" class="form-control" name="chartSubtotal[]" placeholder="Enter section value" required />
             </div>
           `;
           container.appendChild(formGroup);
@@ -88,6 +89,7 @@
       });
     </script>
 
+    <!--Passes tblData to drawChart()-->
     <script>    
       var tblData = <%- JSON.stringify(tblData) %>;  // Embed JSON into JS
       console.log(tblData);
@@ -103,11 +105,22 @@
         data.addColumn("string", "Element");
         data.addColumn("number", "Percentage");
 
+        let runningTotal = 0;
+
           //replace string w/ array[i], 4 with section numbers
-          for (let i = 0; i <= Number(tblData.chartSections); i++) { 
-          data.addRows([
-            [`${tblData.chartLabels}`, i/100] //convert to array plz
-          ]);
+          for (let i = 0; i < Number(tblData.chartSections); i++) { 
+            
+            if (i + 1 == tblData.chartSections) {
+              data.addRows([
+                [`${tblData.chartLabels}`, Number(tblData.chartTotal) - runningTotal] 
+              ]);
+            }
+
+            data.addRows([
+             [`${tblData.chartLabels}`, Number(tblData.chartSubtotal[i])] 
+            ]);
+            
+            runningTotal += tblData.chartSubtotal[i];
           }
 
       //set title

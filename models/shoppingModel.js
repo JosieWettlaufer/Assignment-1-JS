@@ -6,8 +6,8 @@ const tblData = {
   chartOptions: '',
   chartTitle: '',
   chartSections: 0,
-  chartLabels: '',
-  chartSubtotal: 0, 
+  chartLabels: [],
+  chartSubtotal: [], 
   chartTotal: 0
 }
 
@@ -21,9 +21,15 @@ const addTblData = (chartOptions, chartTitle, chartSections, chartLabels, chartS
   tblData.chartOptions = chartOptions;
   tblData.chartTitle = chartTitle;
   tblData.chartSections = chartSections;
-  tblData.chartLabels = chartLabels;
-  tblData.chartSubtotal = chartSubtotal;
+  tblData.chartLabels = []; //reset array
+  tblData.chartSubtotal = []; //reset array
+  for (let i = 0; i < chartSections; i++) {
+    tblData.chartLabels.push(chartLabels[i]);
+    tblData.chartSubtotal.push(chartSubtotal[i]);
+  }
   tblData.chartTotal = chartTotal;
+
+  console.log(tblData); // Debug output
 };
 
 
