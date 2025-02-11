@@ -148,7 +148,6 @@
                   title: `${tblData.xaxisTitle}`,
                   minValue: 0, // Minimum value on the horizontal axis
                   maxValue: tblData.gridInterval*10, // Maximum value on the horizontal axis
-                  bar: { groupWidth: '75%' },
                   //bar chart intervals
                   ticks: [0, tblData.gridInterval, tblData.gridInterval*2,
                   tblData.gridInterval*3, tblData.gridInterval*4,
@@ -161,8 +160,6 @@
               },
               vAxis: {
                   title: `${tblData.yaxisTitle}`,
-                  textPosition: 'out',
-                  direction: -1
               }
           };
         }
