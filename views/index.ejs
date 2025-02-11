@@ -20,7 +20,7 @@
       <form action="/add" method="POST">
         <div class="form-group">
           <label for="chartOptions">Choose an option:</label>
-          <select id="options" class="form-control" name="chartOptions">
+          <select id="chartOptions" class="form-control" name="chartOptions">
             <option value="PieChart">Pie Chart</option>
             <option value="BarChart">Bar Chart</option>
           </select>
@@ -51,6 +51,9 @@
         <!-- Container where inputs will be added dynamically -->
         <div id="chartFields"></div>
 
+        <!-- Container where barchart inputs will be added dynamically -->
+        <div id="barChartFields"></div>
+
         <div class="form-group">
           <label for="chartTotal">Chart Total</label>
           <input
@@ -67,73 +70,100 @@
     </div>
 
     <!--Creates Label Fields Dynamically-->
-    <script src="/public/labelFields.js" defer></script>
+    <script src="/public/dynamicLabelFields.js" defer></script>
+
+    <!--Creates Bar Chart Fields Dynamically-->
+    <script src="/public/formBar.js" defer></script>
 
     <!--Passes tblData to drawChart()-->
     <script>
-      var tblData = <%- JSON.stringify(tblData) %>;  // Embed JSON into JS
-      console.log(tblData);
+            var tblData = <%- JSON.stringify(tblData) %>;  // Embed JSON into JS
+            console.log(tblData);
 
-      //loads chart libraries
-      google.charts.load("current", { packages: ["corechart"] });
-      google.charts.setOnLoadCallback(drawChart);
+            //loads chart libraries
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
+            function drawChart() {
 
-        // Define the chart to be drawn.
-        var data = new google.visualization.DataTable();
-        data.addColumn("string", "Element");
-        data.addColumn("number", "Percentage");
+              // Define the chart to be drawn.
+              var data = new google.visualization.DataTable();
+              data.addColumn("string", "Element");
+              data.addColumn("number", "Percentage");
 
-        let runningTotal = 0;
+              let runningTotal = 0;
 
-        //replace string w/ array[i], 4 with section numbers
-        for (let i = 0; i < Number(tblData.chartSections); i++) {
+              //replace string w/ array[i], 4 with section numbers
+              for (let i = 0; i < Number(tblData.chartSections); i++) {
 
-          if (i + 1 == tblData.chartSections) {
-            data.addRows([
-              [`${tblData.chartLabels}`, Number(tblData.chartTotal) - runningTotal]
-            ]);
-          } else {
-            data.addRows([
-            [`${tblData.chartLabels}`, Number(tblData.chartSubtotal[i])]
-          ]);
-          }
+                if (i + 1 == tblData.chartSections) {
+                  data.addRows([
+                    [`${tblData.chartLabels[i]}`, Number(tblData.chartTotal) - runningTotal]
+                  ]);
+                } else {
+                  data.addRows([
+                  [`${tblData.chartLabels[i]}`, Number(tblData.chartSubtotal[i])]
+                ]);
+                }
 
-          runningTotal += tblData.chartSubtotal[i];
-        }
+                runningTotal += tblData.chartSubtotal[i];
+              }
 
-        var chart = new google.visualization.PieChart(
-          document.getElementById("myChart"));
+              if (tblData.chartOptions === "PieChart") {
+                  // Instantiate and draw the chart.
+                  var chart = new google.visualization.PieChart(
+                  document.getElementById("myChart")
+                  );
 
-        if (tblData.chartOptions === "PieChart") {
-            // Instantiate and draw the chart.
-            var chart = new google.visualization.PieChart(
-            document.getElementById("myChart")
-            );
+                  var options = {
+                    width: 450,
+                    height: 450,
+                    title: `${tblData.chartTitle}`,
+                    titleTextStyle: {
+                        color: "#888",
+                        fontSize: 20,
+                        bold: true
+                    },
+                    titlePosition: 'center'
 
-            var options = {
-              width: 450,
-              height: 450,
+                    //THIS BREAKS THE PIE CHART, WILL NEED TO FIX
+                    // hAxis:  {
+                    //
+                    //   titleTextStyle: {
+                    //     color: "#333",
+                    //     fontSize: 20,
+                    //     bold: true,
+                    //     alignment: "center"
+                    //   }
+                    // },
+                  };
+              } else if (tblData.chartOptions === "BarChart") {
+                  var chart = new google.visualization.BarChart(
+                  document.getElementById("myChart")
+                  );
 
-              //THIS BREAKS THE PIE CHART, WILL NEED TO FIX
-              // hAxis:  {
-              //   title: `${tblData.chartTitle}`,
-              //   titleTextStyle: {
-              //     color: "#333",
-              //     fontSize: 20,
-              //     bold: true,
-              //     alignment: "center"
-              //   }
-              // },
-            };
-        } else if (tblData.chartOptions === "BarChart") {
-            var chart = new google.visualization.BarChart(
-            document.getElementById("myChart")
-            );
-        }
-        chart.draw(data, options);
-      }
+                  var options = {
+                    title: `${tblData.chartTitle}`,
+                    hAxis: {
+                        title: `${tblData.xaxisTitle}`,
+                        minValue: 0, // Minimum value on the horizontal axis
+                        maxValue: tblData.gridInterval*10, // Maximum value on the horizontal axis
+                        ticks: [0, tblData.gridInterval, tblData.gridInterval*2, 
+                        tblData.gridInterval*3, tblData.gridInterval*4, 
+                        tblData.gridInterval*5, tblData.gridInterval*6, 
+                        tblData.gridInterval*7, tblData.gridInterval*8, 
+                        tblData.gridInterval*9, tblData.gridInterval*10], // Define the tick intervals (customized)
+                        gridlines: {
+                            count: 11 // Ensure there are 11 gridlines (from 0 to 100, including 100)
+                        }
+                    },
+                    vAxis: {
+                        title: `${tblData.yaxisTitle}`
+                    }
+                };
+              }
+              chart.draw(data, options);
+            }
     </script>
   </body>
 </html>
