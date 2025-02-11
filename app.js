@@ -5,8 +5,9 @@ const app = express();
 const path = require('path');
 //const bodyParser = require('body-parser');
 
-//allows access to bootstrap files
+//allows access to bootstrap, static files
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 
 // Middleware to parse POST data

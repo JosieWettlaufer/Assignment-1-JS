@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
+  <head>
+    <meta charset="UTF-8" />
     <title>Chart Generator</title>
-    <link rel="stylesheet"
-      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
-      <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="/public/styles.css">
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
-      
+
   <body>
     <h1>Chart Generator</h1>
 
@@ -58,39 +61,71 @@
           />
           <button class="btn btn-primary">Submit</button>
         </div>
-
       </form>
 
-      <div id="myChart" style="max-width:700px; height:400px"></div>
+      <div id="myChart" style="max-width: 700px; height: 400px"></div>
     </div>
-    
+
     <!--Creates Label Fields Dynamically-->
     <script>
-      document.getElementById("chartSections").addEventListener("change", function () {
-        const numSections = parseInt(this.value);
-        const container = document.getElementById("chartFields");
-        container.innerHTML = ""; // Clear previous inputs
-    
-        for (let i = 0; i < numSections; i++) {
-          const formGroup = document.createElement("div");
-          formGroup.classList.add("form-group", "row");
-          formGroup.innerHTML = `
-            <div class="form-group col-md-6">
-              <label>Section ${i+1} Label</label>
-              <input type="text" class="form-control" name="chartLabels[]" placeholder="Enter chart labels" required />
-            </div>
-            <div class="form-group col-md-6">
-              <label>Section ${i+1} Value</label>
-              <input type="number" class="form-control" name="chartSubtotal[]" placeholder="Enter section value" required />
-            </div>
-          `;
-          container.appendChild(formGroup);
-        }
-      });
+      document
+        .getElementById("chartSections")
+        .addEventListener("change", function () {
+          let numSections = parseInt(this.value);
+          const container = document.getElementById("chartFields");
+          container.innerHTML = ""; // Clear previous inputs
+
+          for (let i = 0; i < numSections; i++) {
+            const formGroup = document.createElement("div");
+            formGroup.classList.add("form-group", "row");
+            formGroup.innerHTML = `
+              <div class="form-group col-md-6">
+                <label>Section ${i + 1} Label</label>
+                <input type="text" class="form-control" name="chartLabels[]" placeholder="Enter chart labels" required />
+              </div>
+              <div class="form-group col-md-6">
+                <label>Section ${i + 1} Value</label>
+                <input type="number" class="form-control sectionValue" name="chartSubtotal[]" placeholder="Enter section value" required ${
+                  i === numSections - 1 ? 'id="readonlyValue" readonly' : ""
+                }/>
+              </div>
+            `;
+
+            container.appendChild(formGroup);
+          }
+
+          //attach event listener
+          attachInputListeners();
+        });
+
+      //attach event listener for all input fields except readonly
+      function attachInputListeners() {
+        const inputs = document.querySelectorAll(".sectionValue");
+        const total = document.querySelector('input[name="chartTotal"]');
+
+        inputs.forEach((input) => {
+          if (!input.hasAttribute("readonly")) {
+            input.addEventListener("input", updateTotal);
+          }
+        });
+        total.addEventListener("input", updateTotal);
+      }
+
+      //determine value for readonly
+      function updateTotal() {
+        let total = 0;
+        document.querySelectorAll(".sectionValue").forEach((input) => {
+          if (!input.hasAttribute("readonly")) {
+            total += parseInt(input.value) || 0; // Convert to number, default to 0 if empty
+          }
+        });
+
+        document.getElementById("readonlyValue").value = document.querySelector('input[name="chartTotal"]').value - total; // Update total in last readonly input
+      }
     </script>
 
     <!--Passes tblData to drawChart()-->
-    <script>    
+    <script>
       var tblData = <%- JSON.stringify(tblData) %>;  // Embed JSON into JS
       console.log(tblData);
 
@@ -107,40 +142,56 @@
 
         let runningTotal = 0;
 
-          //replace string w/ array[i], 4 with section numbers
-          for (let i = 0; i < Number(tblData.chartSections); i++) { 
-            
-            if (i + 1 == tblData.chartSections) {
-              data.addRows([
-                [`${tblData.chartLabels}`, Number(tblData.chartTotal) - runningTotal] 
-              ]);
-            }
+        //replace string w/ array[i], 4 with section numbers
+        for (let i = 0; i < Number(tblData.chartSections); i++) {
 
+          if (i + 1 == tblData.chartSections) {
             data.addRows([
-             [`${tblData.chartLabels}`, Number(tblData.chartSubtotal[i])] 
+              [`${tblData.chartLabels}`, Number(tblData.chartTotal) - runningTotal]
             ]);
-            
-            runningTotal += tblData.chartSubtotal[i];
           }
 
-      //set title
-      var options = {'title':`${tblData.chartTitle}`};
+          data.addRows([
+            [`${tblData.chartLabels}`, Number(tblData.chartSubtotal[i])]
+          ]);
 
-      var chart = new google.visualization.PieChart(
-        document.getElementById("myChart"));
+          runningTotal += tblData.chartSubtotal[i];
+        }
 
-      if (tblData.chartOptions === "PieChart") {
-          // Instantiate and draw the chart.
-          var chart = new google.visualization.PieChart(
-          document.getElementById("myChart")
-          );
-      } else if (tblData.chartOptions === "BarChart") {
-          var chart = new google.visualization.BarChart(
-          document.getElementById("myChart")
-          );
+        //set styling options
+
+
+        var chart = new google.visualization.PieChart(
+          document.getElementById("myChart"));
+
+        if (tblData.chartOptions === "PieChart") {
+            // Instantiate and draw the chart.
+            var chart = new google.visualization.PieChart(
+            document.getElementById("myChart")
+            );
+
+            var options = {
+              width: 450,
+              height: 450,
+
+              //THIS BREAKS THE PIE CHART, WILL NEED TO FIX
+              // hAxis:  { 
+              //   title: `${tblData.chartTitle}`,
+              //   titleTextStyle: {
+              //     color: "#333",
+              //     fontSize: 20,
+              //     bold: true,
+              //     alignment: "center"
+              //   }
+              // },
+            };
+        } else if (tblData.chartOptions === "BarChart") {
+            var chart = new google.visualization.BarChart(
+            document.getElementById("myChart")
+            );
+        }
+        chart.draw(data, options);
       }
-      chart.draw(data, options);
-    }
     </script>
   </body>
 </html>
