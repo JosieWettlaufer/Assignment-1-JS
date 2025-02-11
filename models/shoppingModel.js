@@ -7,6 +7,7 @@ const tblData = {
   chartTitle: '',
   chartSections: 0,
   chartLabels: '',
+  chartSubtotal: 0, 
   chartTotal: 0
 }
 
@@ -16,11 +17,12 @@ const getData = () => {
 };
 
 //References Controller, puts form data into tblData object
-const addTblData = (chartOptions, chartTitle, chartSections, chartLabels, chartTotal) => {
+const addTblData = (chartOptions, chartTitle, chartSections, chartLabels, chartSubtotal, chartTotal) => {
   tblData.chartOptions = chartOptions;
   tblData.chartTitle = chartTitle;
   tblData.chartSections = chartSections;
   tblData.chartLabels = chartLabels;
+  tblData.chartSubtotal = chartSubtotal;
   tblData.chartTotal = chartTotal;
 };
 

@@ -16,7 +16,7 @@
       <!--Chart type drop down-->
       <form action="/add" method="POST">
         <div class="form-group">
-          <label for="options">Choose an option:</label>
+          <label for="chartOptions">Choose an option:</label>
           <select id="options" class="form-control" name="chartOptions">
             <option value="PieChart">Pie Chart</option>
             <option value="BarChart">Bar Chart</option>
@@ -36,26 +36,40 @@
 
         <div class="form-group">
           <label for="chartSections">Chart Sections</label>
-          <input
-            type="int"
-            class="form-control"
-            name="chartSections"
-            placeholder="Enter number of chart sections 2-6"
-            required
-          />
+          <select id="options" class="form-control" name="chartSections">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
         </div>
 
-        <!--need to convert to array-->
-        <div class="form-group">
-          <label for="chartLabels">Chart Labels</label>
-          <input
-            type="text"
-            class="form-control"
-            name="chartLabels"
-            placeholder="Enter chart labels"
-            required
-          />
-        </div>
+        <% for (let i = 0; i < 2; i++) { %>
+          <!--need to convert to array-->
+          <div class="form-group row">
+            <div class="form-group col-md-6">
+              <label for="chartLabels">Chart Labels</label>
+              <input
+                type="text"
+                class="form-control"
+                name="chartLabels"
+                placeholder="Enter chart labels"
+                required
+              />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="chartSubtotal">Chart Subtotal</label>
+              <input
+                type="int"
+                class="form-control"
+                name="chartSubtotal"
+                placeholder="Enter section value"
+                required
+              />
+            </div>
+          </div>
+          <% } %>
 
         <div class="form-group">
           <label for="chartTotal">Chart Total</label>
@@ -67,6 +81,7 @@
           />
           <button class="btn btn-primary">Submit</button>
         </div>
+
       </form>
 
       <div id="myChart" style="max-width:700px; height:400px"></div>

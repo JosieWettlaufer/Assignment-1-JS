@@ -9,8 +9,8 @@ const showTable = (req, res) => {
   
 //GETS form data and passes it to model
 const addItem = (req, res) => { 
-    const { chartOptions, chartTitle, chartSections, chartLabels, chartTotal } = req.body; //attrs names from html
-    shoppingModel.addTblData( chartOptions, chartTitle, chartSections, chartLabels, chartTotal ); 
+    const { chartOptions, chartTitle, chartSections, chartLabels, chartSubtotal, chartTotal } = req.body; //attrs names from html
+    shoppingModel.addTblData( chartOptions, chartTitle, chartSections, chartLabels, chartSubtotal, chartTotal ); 
     res.redirect('/'); 
 }; 
   
