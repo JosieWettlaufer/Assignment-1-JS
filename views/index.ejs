@@ -87,33 +87,40 @@
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
+        //exits function if no table data available
+        if (!tblData) return;
         // Define datatable for chart
         var data = new google.visualization.DataTable();
         data.addColumn("string", "Label");
         data.addColumn("number", "Value");
-        data.addColumn({type: 'string', role: 'style'}); //need to fix color
 
         //variable to track sector values
         let runningTotal = 0;
-        //color array
-        const colors = ['#3366CC', '#DC3912', '#FF9900', '#109618', '#990099', '#3B3EAC'];
 
         //Iterate over chart sections and store data in rows
         for (let i = 0; i < Number(tblData.chartSections); i++) {
+
+          let value = Number(tblData.chartSubtotal[i]);
+          if (isNaN(value) || value < 0) value = 0; // Prevent negative/invalid values
+
           //assigns difference of total and runningTotal to last sector value
-          if (i + 1 == tblData.chartSections) {
-            data.addRows([
-              [`${tblData.chartLabels[i]}`, Number(tblData.chartTotal) - runningTotal, `color: ${colors[i]}`] //need to fix
-            ]);
+          if (i == tblData.chartSections - 1) {
+            let lastValue = Number(tblData.chartTotal) - runningTotal;
+            console.log(lastValue);
+            if (lastValue < 0) lastValue = 1;
+              data.addRows([
+                [`${tblData.chartLabels[i]}`, lastValue] //need to fix
+              ]);
+              break;
           //assigns appropriate form value to other sector values
           } else {
             data.addRows([
-            [`${tblData.chartLabels[i]}`, Number(tblData.chartSubtotal[i]), `color: ${colors[i]}`]// ditto
+            [`${tblData.chartLabels[i]}`, value]// ditto
           ]);
           }
 
           //adds each sector value to runningTotal
-          runningTotal += tblData.chartSubtotal[i];
+          runningTotal += value;
         }
 
         //Draws pie chart if user selected pie chart
@@ -131,10 +138,13 @@
               titleTextStyle: {
                   color: "#888",
                   fontSize: 20,
-                  bold: true
+                  bold: true,
+                  alignment: 'center'
               },
-              titlePosition: 'center'
+              titlePosition: 'center',
+              chartArea: { width: '80%', height: '80%' }
             };
+
         //Draws bar chart if user selected bar chart
         } else if (tblData.chartOptions === "BarChart") {
             var chart = new google.visualization.BarChart(
