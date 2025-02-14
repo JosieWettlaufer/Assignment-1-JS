@@ -15,12 +15,14 @@ document
       formGroup.innerHTML = `
         <div class="form-group col-md-6">
           <label>Section ${i + 1} Label</label>
-          <input type="text" class="form-control" name="chartLabels[]" placeholder="Enter chart labels" required />
+          <input type="text" class="form-control" name="chartLabels[]" placeholder="Enter chart labels" 
+          required />
         </div>
 
         <div class="form-group col-md-6">
           <label>Section ${i + 1} Value</label>
-          <input type="number" class="form-control sectionValue" name="chartSubtotal[]" placeholder="Enter section value" required 
+          <input type="number" class="form-control sectionValue" name="chartSubtotal[]" 
+          placeholder="Enter section value" required 
           min="1" max="1000"
           ${
             // Ternary operator assigns readonly to the last input value section
@@ -73,7 +75,8 @@ function updateTotal() {
 
   // Validation: Check if the readonly value is greater than 0
   if (remainingValue <= 0) {
-    readonlyValue.classList.add("is-invalid"); // Add a red border if the remaining value is less than or equal to 0
+    readonlyValue.classList.add("is-invalid"); // Add a red border if the remaining value is less than or 
+    // equal to 0
     alert("Total value must be greater than the sum of sections!"); // Show an alert if invalid
   } else {
     readonlyValue.classList.remove("is-invalid"); // Remove the red border if the value is valid
