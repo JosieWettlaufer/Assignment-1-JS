@@ -75,7 +75,3 @@ function updateTotal() {
     readonlyValue.classList.remove("is-invalid"); // Remove the red border if valid
   }
 }
-
-//Assign calculated value to readonly
-document.getElementById("readonlyValue").value =
-  document.querySelector('input[name="chartTotal"]').value - total;

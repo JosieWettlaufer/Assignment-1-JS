@@ -104,51 +104,44 @@
         //exits function if no table data available
         if (!tblData) return;
 
-
-        //color array
-        var colors = ['silver', 'gold', 'red', 'blue', 'yellow', 'green'];
-
-        // Define datatable for chart
-        var data = new google.visualization.DataTable();
-        data.addColumn("string", "Label");
-        data.addColumn("number", "Value");
-        data.addColumn({ role: 'style' }, "Color");
-
-        //variable to track sector values
-        let runningTotal = 0;
-        //variable for chart sections
-        let sectionNumber = Number(tblData.chartSections);
-
-        //Iterate over chart sections and store data in rows
-        for (let i = 0; i < sectionNumber; i++) {
-
-          //variable for section value
-          let value = Number(tblData.chartSubtotal[i]);
-          // Prevent negative/invalid values
-          if (isNaN(value) || value < 0) value = 0; 
-
-          //assigns difference of total and runningTotal to last sector value
-          if (i == sectionNumber - 1) {
-            let lastValue = Number(tblData.chartTotal) - runningTotal;
-            console.log(lastValue);
-            if (lastValue < 0) lastValue = 1;
-              data.addRows([
-                [`${tblData.chartLabels[i]}`, lastValue, colors[i]]
-              ]);
-              break;
-          //assigns appropriate form value to other sector values
-          } else {
-            data.addRows([
-            [`${tblData.chartLabels[i]}`, value, colors[i]]
-          ]);
-          }
-
-          //adds each sector value to runningTotal
-          runningTotal += value;
-        }
-
         //Draws pie chart if user selected pie chart
         if (tblData.chartOptions === "PieChart") {
+
+            // Define datatable for chart
+            var data = new google.visualization.DataTable();
+            data.addColumn("string", "Label");
+            data.addColumn("number", "Value");
+
+            //variable to track sector values
+            let runningTotal = 0;
+            //variable for chart sections
+            let sectionNumber = Number(tblData.chartSections);
+
+            //Iterate over chart sections and store data in rows
+            for (let i = 0; i < sectionNumber; i++) {
+
+              //variable for section value
+              let value = Number(tblData.chartSubtotal[i]);
+              // Prevent negative/invalid values
+              if (isNaN(value) || value < 0) value = 0; 
+
+              //assigns difference of total and runningTotal to last sector value
+              if (i == sectionNumber - 1) {
+                let lastValue = Number(tblData.chartTotal) - runningTotal;
+                console.log(lastValue);
+                  data.addRows([
+                    [`${tblData.chartLabels[i]}`, lastValue]
+                  ]);
+              //assigns appropriate form value to other sector values
+              } else {
+                data.addRows([
+                [`${tblData.chartLabels[i]}`, value]
+              ]);
+              }
+
+              //adds each sector value to runningTotal
+              runningTotal += value;
+            }
           
             // Instantiate and draw the chart.
             var chart = new google.visualization.PieChart(
@@ -167,42 +160,95 @@
               },
               chartArea: { width: '80%', height: '80%' }
             };
+          }
+          //Draws Column Chart if user selected Column Chart
+          else if (tblData.chartOptions === "ColumnChart") {
 
-        //Draws Column Chart if user selected Column Chart
-        } else if (tblData.chartOptions === "ColumnChart") {
+            var data = new google.visualization.DataTable();
+            //Category name column
+            data.addColumn("string", "Category");
+
+            //Get number of sections from tblData
+            let sectionNumber = Number(tblData.chartSections);
+
+            //Color Array for custom colors
+            let colors = ['silver', 'gold', 'red', 'blue', 'yellow', 'green'];
+
+            // Add separate Chart Label columns for each category
+            for (let i = 0; i < sectionNumber; i++) {
+              data.addColumn("number", tblData.chartLabels[i]); //Label column
+              data.addColumn({ type: "string", role: "annotation" }); // Annotation column
+            }
+
+            //Stores sum of chart subTotals
+            let runningTotal = 0;
+            // First column is the category name
+            let rowValues = ["Total"]; 
+
+            //Iterates over sections and places values in array(rowValues))
+            for (let i = 0; i < sectionNumber; i++) {
+              //Assigns chart subTotal to value
+              let value = Number(tblData.chartSubtotal[i]);
+              
+              //Calculates last section's value (total-runningTotal), pushes to array
+              if (i === sectionNumber - 1) {
+                let lastValue = Number(tblData.chartTotal - runningTotal);
+                rowValues.push(lastValue);
+                rowValues.push(lastValue.toString()); // Annotation text
+              //otherwise pushes section value to array
+              } else {
+                rowValues.push(value);
+                rowValues.push(value.toString()); // Annotation text
+              }
+
+              runningTotal += value;
+            }
+
+            //Adds array values to table rows
+            data.addRows([rowValues]);
+
+
+            // Create a new Column Chart and link it to HTML element
             var chart = new google.visualization.ColumnChart(
             document.getElementById("myChart")
             );
 
-            //assign grid interval variable
-            let gridInterval = tblData.gridInterval;
+            //assign grid interval variable and initialize arrray
+            let gridInterval = Number(tblData.gridInterval);
+            let intervalArray = [];
+
+            //write interval values to array
+            for (let i = 0; i < 11; i++) {
+              let intervalValue = gridInterval * i;
+              intervalArray.push(intervalValue);
+            }
+
+            //Determines max value for horizontal gridlines
+            let maxDataValue = Math.max(...tblData.chartSubtotal.map(Number));
+            let maxValue = Math.max(maxDataValue, Number(tblData.chartTotal)); // Ensure max value covers all data
+
 
             //sets Column Chart attributes
             var options = {
               title: `${tblData.chartTitle}`,
               hAxis: {
-
                   title: `${tblData.xaxisTitle}`,
                   minValue: 0, // Minimum value on the horizontal axis
-                  maxValue: gridInterval*10, // Maximum value on the horizontal axis
+                  maxValue: maxValue,  //Maximum value on the horizontal axis
                   //Column Chart intervals
-                  ticks: [0, gridInterval, gridInterval*2,
-                          gridInterval*3, gridInterval*4,
-                          gridInterval*5, gridInterval*6,
-                          gridInterval*7, gridInterval*8,
-                          gridInterval*9, gridInterval*10], 
-                  gridlines: {
-                      count: 11 // Sets 11 gridlines
-                  }
+                  ticks: intervalArray,
+                  gridlines: { count: 11 }
               },
-              vAxis: {
-                  title: `${tblData.yaxisTitle}`,
-              },
-              legend: { position: "center" }
+              vAxis: {title: `${tblData.yaxisTitle}`},
+              legend: { position: "right" },
+              annotations: {
+                textStyle: { fontSize: 12, color: "#000" }
+              }
           };
         }
         //draw chart
         chart.draw(data, options);
+
       }
     </script>
   </body>
