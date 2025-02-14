@@ -1,3 +1,0 @@
-//Google charts guide
-https://developers.google.com/chart/interactive/docs
-
