@@ -128,7 +128,6 @@
               //assigns difference of total and runningTotal to last sector value
               if (i == sectionNumber - 1) {
                 let lastValue = Number(tblData.chartTotal) - runningTotal;
-                console.log(lastValue);
                   data.addRows([
                     [`${tblData.chartLabels[i]}`, lastValue]
                   ]);
@@ -172,7 +171,7 @@
             let sectionNumber = Number(tblData.chartSections);
 
             //Color Array for custom colors
-            let colors = ['silver', 'gold', 'red', 'blue', 'yellow', 'green'];
+            //let colors = ['silver', 'gold', 'red', 'blue', 'yellow', 'green'];
 
             // Add separate Chart Label columns for each category
             for (let i = 0; i < sectionNumber; i++) {
