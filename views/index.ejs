@@ -39,7 +39,7 @@
         <!--Chart Section Number-->
         <div class="form-group">
           <label for="chartSections">Chart Sections</label>
-          <select id="chartSections" class="form-control" name="chartSections">
+          <select id="chartSections" class="form-control" name="chartSections" required>
             <option value="" selected disabled>-- Select Sections --</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -169,9 +169,6 @@
 
             //Get number of sections from tblData
             let sectionNumber = Number(tblData.chartSections);
-
-            //Color Array for custom colors
-            //let colors = ['silver', 'gold', 'red', 'blue', 'yellow', 'green'];
 
             // Add separate Chart Label columns for each category
             for (let i = 0; i < sectionNumber; i++) {
