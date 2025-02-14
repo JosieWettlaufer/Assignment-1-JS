@@ -2,17 +2,18 @@
 document.getElementById("chartOptions").addEventListener("change", function () {
 
   const chartOptions = document.getElementById("chartOptions");
-  const container = document.getElementById("barChartFields");
+  const container = document.getElementById("ColumnChartFields");
 
   //Generates bar chart input fields if user selects bar chart
-  if (chartOptions.value == "BarChart") {
+  if (chartOptions.value == "ColumnChart") {
     container.innerHTML = ""; // Clear previous inputs
 
     const formGroup = document.createElement("div");
     formGroup.classList.add("form-group");
     formGroup.innerHTML = `
         <label>Grid Intervals</label>
-        <input type="number" class="form-control" name="gridInterval" placeholder="Enter grid interval [10-100]" required />
+        <input type="number" class="form-control" name="gridInterval" placeholder="Enter grid interval [10-100]" required 
+        min="10" max="100"/>
         </div>
 
         <div class="form-group row">

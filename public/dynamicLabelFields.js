@@ -19,10 +19,13 @@ document
 
         <div class="form-group col-md-6">
           <label>Section ${i + 1} Value</label>
-          <input type="number" class="form-control sectionValue" name="chartSubtotal[]" placeholder="Enter section value" required ${
+          <input type="number" class="form-control sectionValue" name="chartSubtotal[]" placeholder="Enter section value" required 
+          min="1" max="1000"
+          ${
             //Ternary operator assigns readonly to last input value section
             i === numSections - 1 ? 'id="readonlyValue" readonly' : ""
-          }/>
+          }
+          />
         </div>
       `;
 
@@ -47,7 +50,7 @@ function attachInputListeners() {
   total.addEventListener("input", updateTotal);
 }
 
-//determine value for readonly
+// Determine value for readonly
 function updateTotal() {
   let total = 0;
   document.querySelectorAll(".sectionValue").forEach((input) => {
@@ -56,7 +59,23 @@ function updateTotal() {
     }
   });
 
-  //Assign calculated value to readonly
-  document.getElementById("readonlyValue").value =
-    document.querySelector('input[name="chartTotal"]').value - total; 
+  // Assign calculated value to readonly
+  let readonlyValue = document.getElementById("readonlyValue");
+  let chartTotal =
+    parseInt(document.querySelector('input[name="chartTotal"]').value) || 0;
+  let remainingValue = chartTotal - total;
+
+  readonlyValue.value = remainingValue;
+
+  // Validation: Check if the readonly value is greater than 0
+  if (remainingValue <= 0) {
+    readonlyValue.classList.add("is-invalid"); // Add a red border
+    alert("Total value must be greater than the sum of sections!");
+  } else {
+    readonlyValue.classList.remove("is-invalid"); // Remove the red border if valid
+  }
 }
+
+//Assign calculated value to readonly
+document.getElementById("readonlyValue").value =
+  document.querySelector('input[name="chartTotal"]').value - total;

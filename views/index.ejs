@@ -20,7 +20,7 @@
           <label for="chartOptions">Choose an option:</label>
           <select id="chartOptions" class="form-control" name="chartOptions">
             <option value="PieChart">Pie Chart</option>
-            <option value="BarChart">Bar Chart</option>
+            <option value="ColumnChart">Column Chart</option>
           </select>
         </div>
 
@@ -49,33 +49,47 @@
           </select>
         </div>
 
-        <!-- Container where sector inputs will be added dynamically -->
-        <div id="chartFields"></div>
-
-        <!-- Container where bar chart inputs will be added dynamically -->
-        <div id="barChartFields"></div>
-
         <!--Chart Total-->
         <div class="form-group">
           <label for="chartTotal">Chart Total</label>
           <input
-            type="int"
+            type="number"
             class="form-control"
             name="chartTotal"
             placeholder="Enter total value of all sectors"
+            required
+            min="1"
+            max="400"
           />
-          <button class="btn btn-primary">Submit</button>
         </div>
+
+        <!-- Container where sector inputs will be added dynamically -->
+        <div id="chartFields"></div>
+
+        <!-- Container where Column Chart inputs will be added dynamically -->
+        <div id="ColumnChartFields"></div>
+
+        <button class="btn btn-primary">Submit</button>
       </form>
 
+      <br/> <!-- Breaks between form and chart -->
+      <br/>
+      
       <!--Chart Container-->
-      <div id="myChart" style="max-width: 700px; height: 400px"></div>
+      <div id="myChart" 
+      style="max-width: 700px;
+             height: 400px;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             margin: auto;">
+      </div>
     </div>
 
     <!--Creates Label Fields Dynamically-->
     <script src="/public/dynamicLabelFields.js" defer></script>
 
-    <!--Creates Bar Chart Fields Dynamically-->
+    <!--Creates Column Chart Fields Dynamically-->
     <script src="/public/formBar.js" defer></script>
 
     <!--Passes tblData to drawChart()-->
@@ -89,33 +103,43 @@
       function drawChart() {
         //exits function if no table data available
         if (!tblData) return;
+
+
+        //color array
+        var colors = ['silver', 'gold', 'red', 'blue', 'yellow', 'green'];
+
         // Define datatable for chart
         var data = new google.visualization.DataTable();
         data.addColumn("string", "Label");
         data.addColumn("number", "Value");
+        data.addColumn({ role: 'style' }, "Color");
 
         //variable to track sector values
         let runningTotal = 0;
+        //variable for chart sections
+        let sectionNumber = Number(tblData.chartSections);
 
         //Iterate over chart sections and store data in rows
-        for (let i = 0; i < Number(tblData.chartSections); i++) {
+        for (let i = 0; i < sectionNumber; i++) {
 
+          //variable for section value
           let value = Number(tblData.chartSubtotal[i]);
-          if (isNaN(value) || value < 0) value = 0; // Prevent negative/invalid values
+          // Prevent negative/invalid values
+          if (isNaN(value) || value < 0) value = 0; 
 
           //assigns difference of total and runningTotal to last sector value
-          if (i == tblData.chartSections - 1) {
+          if (i == sectionNumber - 1) {
             let lastValue = Number(tblData.chartTotal) - runningTotal;
             console.log(lastValue);
             if (lastValue < 0) lastValue = 1;
               data.addRows([
-                [`${tblData.chartLabels[i]}`, lastValue] //need to fix
+                [`${tblData.chartLabels[i]}`, lastValue, colors[i]]
               ]);
               break;
           //assigns appropriate form value to other sector values
           } else {
             data.addRows([
-            [`${tblData.chartLabels[i]}`, value]// ditto
+            [`${tblData.chartLabels[i]}`, value, colors[i]]
           ]);
           }
 
@@ -125,6 +149,7 @@
 
         //Draws pie chart if user selected pie chart
         if (tblData.chartOptions === "PieChart") {
+          
             // Instantiate and draw the chart.
             var chart = new google.visualization.PieChart(
             document.getElementById("myChart")
@@ -136,41 +161,44 @@
               height: 450,
               title: `${tblData.chartTitle}`,
               titleTextStyle: {
-                  color: "#888",
+                  color: "#333",
                   fontSize: 20,
-                  bold: true,
-                  alignment: 'center'
+                  bold: true
               },
-              titlePosition: 'center',
               chartArea: { width: '80%', height: '80%' }
             };
 
-        //Draws bar chart if user selected bar chart
-        } else if (tblData.chartOptions === "BarChart") {
-            var chart = new google.visualization.BarChart(
+        //Draws Column Chart if user selected Column Chart
+        } else if (tblData.chartOptions === "ColumnChart") {
+            var chart = new google.visualization.ColumnChart(
             document.getElementById("myChart")
             );
 
-            //sets bar chart attributes
+            //assign grid interval variable
+            let gridInterval = tblData.gridInterval;
+
+            //sets Column Chart attributes
             var options = {
               title: `${tblData.chartTitle}`,
               hAxis: {
+
                   title: `${tblData.xaxisTitle}`,
                   minValue: 0, // Minimum value on the horizontal axis
-                  maxValue: tblData.gridInterval*10, // Maximum value on the horizontal axis
-                  //bar chart intervals
-                  ticks: [0, tblData.gridInterval, tblData.gridInterval*2,
-                  tblData.gridInterval*3, tblData.gridInterval*4,
-                  tblData.gridInterval*5, tblData.gridInterval*6,
-                  tblData.gridInterval*7, tblData.gridInterval*8,
-                  tblData.gridInterval*9, tblData.gridInterval*10], 
+                  maxValue: gridInterval*10, // Maximum value on the horizontal axis
+                  //Column Chart intervals
+                  ticks: [0, gridInterval, gridInterval*2,
+                          gridInterval*3, gridInterval*4,
+                          gridInterval*5, gridInterval*6,
+                          gridInterval*7, gridInterval*8,
+                          gridInterval*9, gridInterval*10], 
                   gridlines: {
                       count: 11 // Sets 11 gridlines
                   }
               },
               vAxis: {
                   title: `${tblData.yaxisTitle}`,
-              }
+              },
+              legend: { position: "center" }
           };
         }
         //draw chart
