@@ -2,7 +2,3 @@ h1 {
     text-align: center;
 }
 
-#myChart {
-    display: block;
-    margin: 0 auto; /* Horizontally centers the chart */
-}

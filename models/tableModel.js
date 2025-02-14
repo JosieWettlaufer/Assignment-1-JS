@@ -32,12 +32,14 @@ const addTblData = (
   tblData.chartOptions = chartOptions;
   tblData.chartTitle = chartTitle;
   tblData.chartSections = chartSections;
+  
   tblData.chartLabels = []; //reset array
   tblData.chartSubtotal = []; //reset array
-  for (let i = 0; i < chartSections; i++) {
-    tblData.chartLabels.push(chartLabels[i]); //put form values into arrays
-    tblData.chartSubtotal.push(chartSubtotal[i]);
-  }
+
+  //copy arrays into tblData
+  tblData.chartLabels = [...chartLabels];
+  tblData.chartSubtotal = [...chartSubtotal];
+
   tblData.chartTotal = chartTotal;
   tblData.gridInterval = gridInterval;
   tblData.yaxisTitle = yaxisTitle;

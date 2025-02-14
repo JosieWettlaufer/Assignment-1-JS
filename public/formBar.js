@@ -1,15 +1,19 @@
-//Event listener for when user select bar or pie chart
+// Event listener for when user selects bar or pie chart
 document.getElementById("chartOptions").addEventListener("change", function () {
 
+  // Get references to the chart options dropdown and container for dynamic form inputs
   const chartOptions = document.getElementById("chartOptions");
   const container = document.getElementById("ColumnChartFields");
 
-  //Generates bar chart input fields if user selects bar chart
+  // Check if the selected chart type is "ColumnChart"
   if (chartOptions.value == "ColumnChart") {
-    container.innerHTML = ""; // Clear previous inputs
+    container.innerHTML = ""; // Clear previous inputs in the container
 
+    // Create a new div to hold the input fields for the bar chart
     const formGroup = document.createElement("div");
     formGroup.classList.add("form-group");
+
+    // Define the inner HTML for the form inputs related to the bar chart
     formGroup.innerHTML = `
         <label>Grid Intervals</label>
         <input type="number" class="form-control" name="gridInterval" placeholder="Enter grid interval [10-100]" required 
@@ -28,10 +32,10 @@ document.getElementById("chartOptions").addEventListener("change", function () {
             </div>
     `;
 
-    //appends new form inputs to barChartFields div
+    // Append the newly created form inputs to the container div
     container.appendChild(formGroup);
   } else {
-    //clears bar chart input fields when user selects pie chart
+    // If the user selects a chart other than "ColumnChart" (e.g., pie chart), clear the container
     container.innerHTML = ""; 
   }
 });

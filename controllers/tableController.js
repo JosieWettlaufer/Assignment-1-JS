@@ -1,9 +1,9 @@
-// controllers/shoppingController.js
-const shoppingModel = require("../models/tableModel");
+// controllers/tableController.js
+const tableModel = require("../models/tableModel");
 
+//gets table properties from model, passes to view
 const showTable = (req, res) => {
-  //gets table properties from model, passes to view
-  const tblData = shoppingModel.getData();
+  const tblData = tableModel.getData();
   res.render("index", { tblData });
 };
 
@@ -20,7 +20,7 @@ const addItem = (req, res) => {
     yaxisTitle,
     xaxisTitle,
   } = req.body; //attrs names from html
-  shoppingModel.addTblData(
+  tableModel.addTblData(
     chartOptions,
     chartTitle,
     chartSections,
